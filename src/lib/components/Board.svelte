@@ -78,49 +78,53 @@
 </script>
 
 <div class="board">
-  <svg class="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
-    {#each lines as line}
-      <line
-        x1={line.x1}
-        y1={line.y1}
-        x2={line.x2}
-        y2={line.y2}
-        class="board-line"
-      />
-    {/each}
-  </svg>
+  <div class="board-surface">
+    <svg class="board-lines" viewBox="0 0 100 100" preserveAspectRatio="none">
+      {#each lines as line, i (i)}
+        <line
+          x1={line.x1}
+          y1={line.y1}
+          x2={line.x2}
+          y2={line.y2}
+          class="board-line"
+        />
+      {/each}
+    </svg>
 
-  {#each POINTS as point (point.id)}
-    {@const validDest = validDestinations.includes(point.id)}
-    {@const removable = removableTargets.includes(point.id)}
-    {@const isMill = isPointInMill(point.id)}
-    {@const isSelected = state.selectedPoint === point.id}
-    {@const disabled =
-      state.winner !== null ||
-      (state.phase === 'removing' && !removable) ||
-      (state.mustRemove && !removable) ||
-      (!state.mustRemove &&
-        state.phase === 'placing' &&
-        state.board[point.id] !== null &&
-        !validDest) ||
-      (!state.mustRemove &&
-        (state.phase === 'moving' || state.phase === 'flying') &&
-        state.board[point.id] !== state.currentPlayer &&
-        !validDest &&
-        state.selectedPoint !== point.id)}
+    <div class="board-points">
+      {#each POINTS as point (point.id)}
+        {@const validDest = validDestinations.includes(point.id)}
+        {@const removable = removableTargets.includes(point.id)}
+        {@const isMill = isPointInMill(point.id)}
+        {@const isSelected = state.selectedPoint === point.id}
+        {@const disabled =
+          state.winner !== null ||
+          (state.phase === 'removing' && !removable) ||
+          (state.mustRemove && !removable) ||
+          (!state.mustRemove &&
+            state.phase === 'placing' &&
+            state.board[point.id] !== null &&
+            !validDest) ||
+          (!state.mustRemove &&
+            (state.phase === 'moving' || state.phase === 'flying') &&
+            state.board[point.id] !== state.currentPlayer &&
+            !validDest &&
+            state.selectedPoint !== point.id)}
 
-    <BoardPoint
-      x={point.x}
-      y={point.y}
-      value={state.board[point.id]}
-      {isSelected}
-      {isMill}
-      {removable}
-      isValidDestination={validDest}
-      {disabled}
-      onClick={() => onPointClick(point.id)}
-    />
-  {/each}
+        <BoardPoint
+          x={point.x}
+          y={point.y}
+          value={state.board[point.id]}
+          {isSelected}
+          isMillPoint={isMill}
+          isRemovable={removable}
+          isValidDestination={validDest}
+          {disabled}
+          onClick={() => onPointClick(point.id)}
+        />
+      {/each}
+    </div>
+  </div>
 </div>
 
 <style>
@@ -132,17 +136,29 @@
     margin: 0 auto;
     background: var(--board-bg);
     border-radius: 16px;
-    padding: 8%;
     box-sizing: border-box;
     box-shadow: var(--board-shadow);
   }
 
-  .board-lines {
+  .board-surface {
     position: absolute;
-    top: 8%;
-    left: 8%;
-    width: 84%;
-    height: 84%;
+    inset: 8%;
+  }
+
+  .board-lines,
+  .board-points {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .board-points {
+    pointer-events: none;
+  }
+
+  .board-points :global(.point) {
+    pointer-events: auto;
   }
 
   .board-line {
