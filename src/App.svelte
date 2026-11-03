@@ -10,7 +10,7 @@
 
 <div id="mill-game">
   <header>
-    <h1>Mühle</h1>
+    <h1>MÜHLE</h1>
     <p class="subtitle">The classic strategy game of mills and captures</p>
   </header>
 
